@@ -1,5 +1,7 @@
 package br.com.arthurhenrique.model;
 
+import java.time.LocalDate;
+
 public class Projeto {
 
     private int id;
@@ -7,22 +9,44 @@ public class Projeto {
     private String descricao;
     private String categoria;
     private String status;
-    private String prazo;
+    private LocalDate dataCriacao;
+    private LocalDate prazo;
+
+    private String usuarioLogin;
 
     public Projeto() {
+        this.dataCriacao = LocalDate.now();
     }
 
     public Projeto(int id, String nome, String descricao, String categoria, String status) {
-        this(id, nome, descricao, categoria, status, "");
-    }
-
-    public Projeto(int id, String nome, String descricao, String categoria, String status, String prazo) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
         this.categoria = categoria;
         this.status = status;
+        this.dataCriacao = LocalDate.now();
+    }
+
+    public Projeto(int id, String nome, String descricao, String categoria, String status,
+            LocalDate dataCriacao, LocalDate prazo) {
+        this.id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.categoria = categoria;
+        this.status = status;
+        this.dataCriacao = dataCriacao != null ? dataCriacao : LocalDate.now();
         this.prazo = prazo;
+    }
+
+    public void exibirDados() {
+        System.out.println("ID: " + id);
+        System.out.println("Nome: " + nome);
+        System.out.println("Descrição: " + descricao);
+        System.out.println("Categoria: " + categoria);
+        System.out.println("Status: " + status);
+        System.out.println("Data de Criação: " + dataCriacao);
+        System.out.println("Prazo: " + prazo);
+        System.out.println("-------------------");
     }
 
     public int getId() {
@@ -65,16 +89,35 @@ public class Projeto {
         this.status = status;
     }
 
-    public String getPrazo() {
+    public LocalDate getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDate dataCriacao) {
+        this.dataCriacao = dataCriacao;
+    }
+
+    public LocalDate getPrazo() {
         return prazo;
     }
 
-    public void setPrazo(String prazo) {
+    public void setPrazo(LocalDate prazo) {
         this.prazo = prazo;
     }
 
-    public void exibirDados() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'exibirDados'");
+    public String getUsuarioLogin() {
+        return usuarioLogin;
+    }
+
+    public void setUsuarioLogin(String usuarioLogin) {
+        this.usuarioLogin = usuarioLogin;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "ID: %d%nNome: %s%nDescrição: %s%nCategoria: %s%nStatus: %s%nData de Criação: %s%nPrazo: %s",
+                id, nome, descricao, categoria, status, dataCriacao, prazo
+        );
     }
 }

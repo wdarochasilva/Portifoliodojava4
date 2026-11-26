@@ -13,6 +13,21 @@ const corpoTabelaRelatorio = document.getElementById("corpoTabelaRelatorio");
 let todosProjetos = [];
 let projetosFiltrados = [];
 
+function formatarDataBR(dataIso, fallback = "-") {
+    if (!dataIso) {
+        return fallback;
+    }
+
+    const parteData = String(dataIso).split("T")[0];
+    const partes = parteData.split("-");
+    if (partes.length !== 3) {
+        return dataIso;
+    }
+
+    const [ano, mes, dia] = partes;
+    return `${dia}/${mes}/${ano}`;
+}
+
 async function inicializarRelatorios() {
     try {
         mensagemRelatorio.textContent = "Carregando dados do relatório...";
@@ -78,7 +93,7 @@ function renderizarTabela() {
     if (projetosFiltrados.length === 0) {
         const linhaVazia = document.createElement("tr");
         const celulaVazia = document.createElement("td");
-        celulaVazia.colSpan = 5;
+        celulaVazia.colSpan = 6;
         celulaVazia.classList.add("celula-vazia");
         celulaVazia.textContent = "Nenhum projeto encontrado para os filtros selecionados.";
         linhaVazia.appendChild(celulaVazia);
@@ -117,11 +132,16 @@ function renderizarTabela() {
 
         tdStatus.appendChild(badgeStatus);
 
+        const tdPrazo = document.createElement("td");
+        tdPrazo.classList.add("coluna-data");
+        tdPrazo.textContent = formatarDataBR(projeto.prazo, "-");
+
         tr.appendChild(tdId);
         tr.appendChild(tdNome);
         tr.appendChild(tdDescricao);
         tr.appendChild(tdCategoria);
         tr.appendChild(tdStatus);
+        tr.appendChild(tdPrazo);
 
         corpoTabelaRelatorio.appendChild(tr);
     });
@@ -139,16 +159,16 @@ function exportarCsv() {
         return;
     }
 
-    const cabecalho = ["ID", "Nome", "Descricao", "Categoria", "Status"];
+    const cabecalho = ["ID", "Nome", "Descricao", "Categoria", "Status", "Prazo"];
     const linhas = projetosFiltrados.map(p => [
         escaparCsv(p.id),
         escaparCsv(p.nome),
         escaparCsv(p.descricao),
         escaparCsv(p.categoria),
-        escaparCsv(p.status)
+        escaparCsv(p.status),
+        escaparCsv(formatarDataBR(p.prazo, ""))
     ].join(";"));
 
-    // \uFEFF ajuda o Excel em português a reconhecer acentos (UTF-8) corretamente
     const conteudoCsv = "\uFEFF" + [cabecalho.join(";"), ...linhas].join("\n");
     const blob = new Blob([conteudoCsv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
